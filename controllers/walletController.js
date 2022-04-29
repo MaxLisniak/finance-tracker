@@ -47,7 +47,6 @@ exports.wallet_add_POST = [
     (req, res, next) => {
         //Validation errors 
         const errors = validationResult(req);
-
         let new_wallet = new Wallet(
             {
                 name: req.body.name,
@@ -61,6 +60,7 @@ exports.wallet_add_POST = [
                 'wallet_add', 
                 { 
                     title: "Add a digital wallet",
+                    wallet: new_wallet,
                     errors: errors.array(),
                 }
             );
@@ -75,14 +75,14 @@ exports.wallet_add_POST = [
 
                 // Such a wallet already exists
                 if (found_wallet){
-                    res.redirect(found_wallet.url);
+                    res.redirect('/');
                 }
                 else {
                     new_wallet.save(function (err){
                         if (err) {
                             return next(err);
                         }
-                        res.redirect(new_wallet.url);
+                        res.redirect('/');
                     })
                 }
 

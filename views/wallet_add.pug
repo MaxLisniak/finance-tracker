@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  h1= title
+  form(method='POST', action="")
+    label(
+      for='wallet_name'
+    ) Wallet Name 
+    input#wallet_name(
+      type='text',
+      placeholder='Enter Wallet Name'
+      name="name"
+      required="true"
+      value=(undefined === wallet ? '': wallet.name)
+    )
+    div 
+      input#wallet_type_cash(
+        type='radio'
+        name='type'
+        required='required'
+        checked='checked'
+        value='Cash'
+      )
+      label(
+        for="wallet_type_cash"
+      ) Cash
+    div 
+      input#wallet_type_card(
+        type='radio'
+        name='type'
+        value='Card'
+      )
+      label(
+        for="wallet_type_card"
+      ) Card
+    button#wallet_submit(
+      type='submit'
+    ) ADD
+  if errors
+    ul
+      for error in errors
+        li!= error.msg
