@@ -20,8 +20,8 @@ let WalletSchema = new Schema(
             required: true,
         },
         created: {
-            type: DateTime,
-            default: DateTime.now,
+            type: Date,
+            default: Date.now,
         }
     }
 );
