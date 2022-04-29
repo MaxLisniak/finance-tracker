@@ -13,6 +13,7 @@ let WalletSchema = new Schema(
         balance: {
             type: Number,
             required: true,
+            default: 0,
         },
         type: {
             type: String,
@@ -22,6 +23,7 @@ let WalletSchema = new Schema(
         created: {
             type: Date,
             default: Date.now,
+            required: true,
         }
     }
 );
