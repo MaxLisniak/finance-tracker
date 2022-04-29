@@ -31,6 +31,7 @@ let TransactionSchema = new Schema(
         datetime: {
             type: Date,
             default: Date.now,
+            required: true,
         },
         category: {
             type: Schema.Types.ObjectId,
