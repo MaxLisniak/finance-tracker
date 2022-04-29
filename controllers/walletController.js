@@ -75,14 +75,14 @@ exports.wallet_add_POST = [
 
                 // Such a wallet already exists
                 if (found_wallet){
-                    res.redirect(found_wallet.info_page);
+                    res.redirect(found_wallet.url);
                 }
                 else {
                     new_wallet.save(function (err){
                         if (err) {
                             return next(err);
                         }
-                        res.redirect(new_wallet.info_page);
+                        res.redirect(new_wallet.url);
                     })
                 }
 

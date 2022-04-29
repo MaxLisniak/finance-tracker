@@ -28,5 +28,11 @@ let WalletSchema = new Schema(
     }
 );
 
+WalletSchema
+.virtual('url')
+.get(function(){
+    return '/wallet/' + this._id;
+});
+
 //Export model
 module.exports = mongoose.model('Wallet', WalletSchema);
