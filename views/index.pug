@@ -5,9 +5,13 @@ block content
   ul 
     each wallet in wallets
       li 
-        a(href=wallet.url) #{wallet.name} balance #{wallet.balance} |
-        a(href=`/wallets/make_transaction/add/${wallet._id}`) Add money |
-        a(href=`/wallets/make_transaction/spend/${wallet._id}`) Spend money |
+        a(href=wallet.url) #{wallet.name} (balance: #{wallet.balance})
+        a(href=`/wallets/make_transaction/add/${wallet._id}`) Add money
+        a(href=`/wallets/make_transaction/spend/${wallet._id}`) Spend money
         a(href=`/wallets/make_transaction/move/${wallet._id}`) Move money
-
+  ul
+    li 
+      a(href=earned.url) #{earned.name} (balance: #{earned.balance})
+    li 
+      a(href=spent.url) #{spent.name} (balance: #{spent.balance})
   a(href="/wallets/add_wallet") Add a digital wallet 

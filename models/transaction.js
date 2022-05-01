@@ -2,17 +2,18 @@ const { DateTime } = require('luxon');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-const consts = {
-    add: 'a',
-    spend: 's',
-    move: 'm',
-}
+const transaction_types = require('../consts');
+
 
 let TransactionSchema = new Schema(
     {
         type: {
             type: String,
-            enum: [consts.add, consts.spend, consts.move],
+            enum: [
+                transaction_types.add.short, 
+                transaction_types.spend.short, 
+                transaction_types.move.short
+            ],
             required: true,
         },
         amount: {

@@ -1,6 +1,7 @@
 const { DateTime } = require("luxon");
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+let Transaction = require('./transaction');
 
 let WalletSchema = new Schema(
     {
@@ -17,14 +18,14 @@ let WalletSchema = new Schema(
         },
         type: {
             type: String,
-            enum: ['Card', 'Cash'],
+            enum: ['Card', 'Cash', 'Service'],
             required: true,
         },
         created: {
             type: Date,
             default: Date.now,
             required: true,
-        }
+        },
     }
 );
 
@@ -33,6 +34,7 @@ WalletSchema
 .get(function(){
     return '/wallets/wallet/' + this._id;
 });
+
 
 //Export model
 module.exports = mongoose.model('Wallet', WalletSchema);

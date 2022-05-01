@@ -18,8 +18,9 @@ block content
     input#transaction_description(
       type='text',
       placeholder='Enter Description'
-      name="description"
-    )
+      name="description",
+      value= (description===undefined ? "" : description)
+    ) 
     if categories
       label(
         for="transaction_category"

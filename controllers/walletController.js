@@ -5,26 +5,68 @@ const Category = require("../models/category");
 const { body,validationResult } = require('express-validator');
 var async = require('async');
 
+async function earned_balance_count(wallet){
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    let balance = 0;
+    if (wallet.name === "EARNED") {
+        const transactions = await Transaction.find(
+            {
+                "$and" : [
+                    {from: wallet._id},
+                    {datetime: {
+                        "$gt": firstDay
+                    }
+                    }
+                ]
+            }
+        ).select('amount').exec();
+        // console.log(transactions);
+        for (let transaction of transactions){
+            balance += transaction.amount;
+        };
+        return balance;
+    }
+    
+}
+
 exports.index = function(req, res, next){
     // Find all wallet objects
-    Wallet.find()
-    // Sort by 'created' field in ascending order
-    .sort([['created', 'ascending']])
-    .exec(function (err, wallet_list){
-        // If error
-        if (err) {
+    async.parallel({
+        wallets: function(callback){
+            Wallet.find({
+                name: {
+                    "$nin": ["EARNED", "SPENT"]
+                }
+            })
+            // Sort by 'created' field in ascending order
+            .sort([['created', 'ascending']])
+            .exec(callback);
+        },
+        earned: function(callback){
+            Wallet.findOne({name: "EARNED"})
+            .exec(callback);
+        },
+        spent: function(callback){
+            Wallet.findOne({name: "SPENT"})
+            .exec(callback);
+        }
+    }, function(err, results){
+        if (err){
+            err.status = 404;
             return next(err);
         }
-        // If success
         res.render(
             'index', 
             { 
                 title: "All wallets", 
-                wallets: wallet_list
+                wallets: results.wallets,
+                earned: results.earned,
+                spent: results.spent,
             }
         );
     });
-
+    
 };
 
 exports.wallet_view = function(req, res, next){
@@ -50,7 +92,7 @@ exports.wallet_view = function(req, res, next){
             return next(err);
         }
         // Wallet not found
-        if (results.wallet==null) {
+        if (results.wallet===undefined) {
             var err = new Error('Wallet not found');
             err.status = 404;
             return next(err);
