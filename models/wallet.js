@@ -31,7 +31,7 @@ let WalletSchema = new Schema(
 WalletSchema
 .virtual('url')
 .get(function(){
-    return '/wallet/' + this._id;
+    return '/wallets/wallet/' + this._id;
 });
 
 //Export model

@@ -1,0 +1,47 @@
+extends layout
+
+block content
+  h1= title
+  form(method='POST', action="")
+    label(
+      for='transaction_amount'
+    ) Amount
+    input#transaction_amount(
+      type='number',
+      placeholder='Enter Amount'
+      name="amount"
+      required="required"
+    )
+    label(
+      for='transaction_description'
+    ) Description
+    input#transaction_description(
+      type='text',
+      placeholder='Enter Description'
+      name="description"
+    )
+    if categories
+      label(
+        for="transaction_category"
+      ) Category
+      select#transaction_category(
+        name="category"
+      )
+        each category in categories 
+          option #{category.name}
+    if wallets
+      label(
+        for="target_wallet"
+      ) Move to
+      select#target_wallet(
+        name="target_wallet"
+      )
+        each wallet in wallets 
+          option #{`${wallet.name} (${wallet.balance})`}
+    button#wallet_submit(
+      type='submit'
+    ) ADD
+  if errors
+    ul
+      for error in errors
+        li!= error.msg

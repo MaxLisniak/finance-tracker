@@ -1,5 +1,9 @@
 const Wallet = require("../models/wallet");
+const Transaction = require("../models/transaction");
+const Category = require("../models/category");
+
 const { body,validationResult } = require('express-validator');
+var async = require('async');
 
 exports.index = function(req, res, next){
     // Find all wallet objects
@@ -22,6 +26,45 @@ exports.index = function(req, res, next){
     });
 
 };
+
+exports.wallet_view = function(req, res, next){
+    async.parallel({
+        // Find wallet
+        wallet: function(callback){
+            Wallet.findById(req.params.id)
+            .exec(callback);
+        },
+        // Find income transactions
+        transactions_to: function(callback){
+            Transaction.find({'from': req.params.id})
+            .exec(callback);
+        },
+        // Find outcome transactions
+        transactions_from: function(callback){
+            Transaction.find({'to': req.params.id})
+            .exec(callback);
+        }
+    }, function(err, results){
+        // If error
+        if (err) {
+            return next(err);
+        }
+        // Wallet not found
+        if (results.wallet==null) {
+            var err = new Error('Wallet not found');
+            err.status = 404;
+            return next(err);
+        }
+        res.render(
+            'wallet_view', 
+            {
+                title: results.wallet.name, 
+                income: results.transactions_from, 
+                outcome: results.transactions_to,
+            }
+        )
+    })
+}
 
 exports.wallet_add_GET = function(req, res, next){
     res.render(

@@ -3,20 +3,22 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 const consts = {
-    income: 'i',
-    outcome: 'o',
+    add: 'a',
+    spend: 's',
+    move: 'm',
 }
 
 let TransactionSchema = new Schema(
     {
         type: {
             type: String,
-            enum: [consts.income, consts.outcome],
+            enum: [consts.add, consts.spend, consts.move],
             required: true,
         },
         amount: {
             type: Number,
             required: true,
+            min: [1, "Enter the ammount greater than 0"],
         },
         from: {
             type: Schema.Types.ObjectId,
@@ -38,6 +40,11 @@ let TransactionSchema = new Schema(
             ref: 'Category',
             required: false,
             default: undefined,
+        },
+        description: {
+            type: String,
+            required: false,
+            default: "",
         }
     }
 )

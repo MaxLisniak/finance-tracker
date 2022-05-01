@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  h1= title
+  h2 Income
+  ul
+  each transaction in income 
+    li 
+      p #{transaction.description}
+      p #{transaction.datetime}
+  else 
+    p No transactions
+  h2 Outcome
+  ul
+  each transaction in outcome
+    li 
+      p #{transaction.description}
+      p #{transaction.datetime}
+  else 
+    p No transactions

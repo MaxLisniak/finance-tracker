@@ -5,5 +5,9 @@ block content
   ul 
     each wallet in wallets
       li 
-        p #{wallet.name}
+        a(href=wallet.url) #{wallet.name} balance #{wallet.balance} |
+        a(href=`/wallets/make_transaction/add/${wallet._id}`) Add money |
+        a(href=`/wallets/make_transaction/spend/${wallet._id}`) Spend money |
+        a(href=`/wallets/make_transaction/move/${wallet._id}`) Move money
+
   a(href="/wallets/add_wallet") Add a digital wallet 
