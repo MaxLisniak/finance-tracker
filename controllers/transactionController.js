@@ -72,36 +72,8 @@ exports.transaction_add_POST = [
                 transaction.save(function(err){
                     if (err){
                         return next(err);
-                    }
-                    const now = new Date();
-                    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-                    let balance = 0;
-                    Transaction.find(
-                    {
-                        "$and" : [
-                            {from: results.earned_wallet._id},
-                            {datetime: {
-                                "$gt": firstDay
-                            }
-                            }
-                        ]
-                    }
-                    ).select('amount').exec(function(err, transactions){
-                        if(err){
-                            return next(err);
-                        }
-                        for (let transaction of transactions){
-                            balance += transaction.amount;
-                        };
-                        results.earned_wallet.balance = balance;
-                        results.earned_wallet.save(function(err){
-                            if (err){
-                                return next(err);
-                            }
-                        })
-                        res.redirect('/wallets');
-                    }
-                    );
+                    } 
+                    res.redirect('/wallets');
                 })
             }
         )

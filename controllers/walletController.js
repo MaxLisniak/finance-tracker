@@ -32,43 +32,73 @@ async function earned_balance_count(wallet){
 
 exports.index = function(req, res, next){
     // Find all wallet objects
-    async.parallel({
-        wallets: function(callback){
-            Wallet.find({
-                name: {
-                    "$nin": ["EARNED", "SPENT"]
-                }
-            })
-            // Sort by 'created' field in ascending order
-            .sort([['created', 'ascending']])
-            .exec(callback);
-        },
-        earned: function(callback){
-            Wallet.findOne({name: "EARNED"})
-            .exec(callback);
-        },
-        spent: function(callback){
-            Wallet.findOne({name: "SPENT"})
-            .exec(callback);
-        }
-    }, function(err, results){
-        if (err){
-            err.status = 404;
-            return next(err);
-        }
-        res.render(
-            'index', 
-            { 
-                title: "All wallets", 
-                wallets: results.wallets,
-                earned: results.earned,
-                spent: results.spent,
+    async.parallel(
+        {
+            wallets: function(callback){
+                Wallet.find({
+                    name: {
+                        "$nin": ["EARNED", "SPENT"]
+                    }
+                })
+                // Sort by 'created' field in ascending order
+                .sort([['created', 'ascending']])
+                .exec(callback);
+            },
+            earned: function(callback){
+                Wallet.findOne({name: "EARNED"})
+                .exec(callback);
+            },
+            spent: function(callback){
+                Wallet.findOne({name: "SPENT"})
+                .exec(callback);
             }
-        );
-    });
-    
-};
-
+        }, 
+        function(err, results){
+            if (err){
+                err.status = 404;
+                return next(err);
+            }
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            let balance = 0;
+            Transaction.find(
+            {
+                "$and" : [
+                    {from: results.earned._id},
+                    {datetime: {
+                        "$gt": firstDay
+                    }
+                    }
+                ]
+            }
+            ).select('amount').exec(function(err, transactions){
+                if(err){
+                    return next(err);
+                }
+                for (let transaction of transactions){
+                    balance += transaction.amount;
+                };
+                if (results.earned.balance != balance){
+                    results.earned.balance = balance;
+                    results.earned.save(function(err){
+                        if (err){
+                            return next(err);
+                        }
+                    })
+                }
+                
+            })
+            res.render(
+                'index', 
+                { 
+                    title: "All wallets", 
+                    wallets: results.wallets,
+                    earned: results.earned,
+                    spent: results.spent,
+                }
+            )
+        }
+)}
 exports.wallet_view = function(req, res, next){
     async.parallel({
         // Find wallet

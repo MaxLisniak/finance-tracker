@@ -11,7 +11,7 @@ block content
         a(href=`/wallets/make_transaction/move/${wallet._id}`) Move money
   ul
     li 
-      a(href=earned.url) #{earned.name} (balance: #{earned.balance})
+      a(href=earned.url) Earned this month: #{earned.balance}
     li 
-      a(href=spent.url) #{spent.name} (balance: #{spent.balance})
+      a(href=spent.url) Spent this month: #{spent.balance}
   a(href="/wallets/add_wallet") Add a digital wallet 
