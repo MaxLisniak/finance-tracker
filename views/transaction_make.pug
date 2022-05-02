@@ -38,7 +38,7 @@ block content
         name="target_wallet"
       )
         each wallet in wallets 
-          option #{`${wallet.name} (${wallet.balance})`}
+          option(value=wallet._id) #{`${wallet.name} (${wallet.balance})`}
     button#wallet_submit(
       type='submit'
     ) ADD

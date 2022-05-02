@@ -191,3 +191,84 @@ exports.transaction_move_GET = function (req, res, next){
         })
     });
 }
+
+exports.transaction_move_POST = [
+    body('description')
+    .trim()
+    .escape(),
+
+    body('amount')
+    .isInt({
+        min: 1
+    })
+    .withMessage("The number must be greater than 0"),
+
+    body('target_wallet')
+    .escape(),
+
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            Wallet.find({
+                "type": {
+                    "$ne": "Service"
+                }
+            }).exec(function(err, wallets){
+                if (err){
+                    return next(err);
+                }
+                res.render('transaction_make', {
+                    title: transaction_types.move.title,
+                    description: req.body.description,
+                    errors: errors.array(),
+                    wallets: wallets,
+                })
+            })
+            
+            return;
+        }
+        async.parallel({
+            this_wallet: function(callback){
+                Wallet.findById(req.params.id).exec(callback)
+            },
+            target_wallet: function(callback){ 
+                Wallet.findById(req.body.target_wallet).exec(callback)
+            }
+        }, function (err, queried_wallets){
+                if(err){
+                    return next(err);
+                }
+                req.body.amount = Number(req.body.amount);
+                let transaction = new Transaction(
+                    {
+                        type: transaction_types.move.short,
+                        description: req.body.description,
+                        amount: req.body.amount,
+                        to: queried_wallets.target_wallet._id,
+                        from: queried_wallets.this_wallet._id,
+                    }
+                )
+                // console.log(transaction);
+                queried_wallets.target_wallet.balance += req.body.amount;
+                queried_wallets.target_wallet.save(function(err){
+                    if (err){
+                        return next(err);
+                    }
+                })
+
+                queried_wallets.this_wallet.balance -= req.body.amount;
+                queried_wallets.this_wallet.save(function(err){
+                    if (err){
+                        return next(err);
+                    }
+                })
+
+                transaction.save(function(err){
+                    if (err){
+                        return next(err);
+                    } 
+                    res.redirect('/wallets');
+                })
+            }
+        )
+}]
