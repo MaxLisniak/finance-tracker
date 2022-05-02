@@ -7,7 +7,12 @@ block content
   each transaction in income 
     li 
       p #{transaction.description}
-      p #{transaction.datetime}
+      p #{transaction.datetime_formatted}
+      //- if !transaction.from.name==="EARNED"
+      if transaction.from.type ==="Service"
+        p #{transaction.from.name}
+      else 
+        p to #{transaction.from.name}
   else 
     p No transactions
   h2 Outcome
@@ -15,6 +20,12 @@ block content
   each transaction in outcome
     li 
       p #{transaction.description}
-      p #{transaction.datetime}
+      p #{transaction.datetime_formatted}
+      p #{transaction.category.name === undefined ? "" :  transaction.category.name}
+      if transaction.to.type ==="Service"
+        p #{transaction.to.name}
+      else 
+        p to #{transaction.to.name}
+
   else 
     p No transactions

@@ -39,7 +39,7 @@ let TransactionSchema = new Schema(
         category: {
             type: Schema.Types.ObjectId,
             ref: 'Category',
-            required: false,
+            required: true,
             default: undefined,
         },
         description: {
@@ -49,6 +49,15 @@ let TransactionSchema = new Schema(
         }
     }
 )
+
+TransactionSchema
+.virtual('datetime_formatted')
+.get(function(){
+  return this.datetime ? 
+    DateTime.fromJSDate(this.datetime)
+    .toLocaleString(DateTime.DATETIME_MED) : 
+    '';
+});
 
 //Export model
 module.exports = mongoose.model('Transaction', TransactionSchema);

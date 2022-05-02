@@ -139,13 +139,16 @@ exports.wallet_view = function(req, res, next){
             .exec(callback);
         },
         // Find income transactions
-        transactions_to: function(callback){
-            Transaction.find({'from': req.params.id})
+        incoming_transactions: function(callback){
+            Transaction.find({'to': req.params.id})
+            .populate('from')
             .exec(callback);
         },
         // Find outcome transactions
-        transactions_from: function(callback){
-            Transaction.find({'to': req.params.id})
+        outgoing_transactions: function(callback){
+            Transaction.find({'from': req.params.id})
+            .populate('category')
+            .populate('to')
             .exec(callback);
         }
     }, function(err, results){
@@ -163,8 +166,8 @@ exports.wallet_view = function(req, res, next){
             'wallet_view', 
             {
                 title: results.wallet.name, 
-                income: results.transactions_from, 
-                outcome: results.transactions_to,
+                income: results.incoming_transactions, 
+                outcome: results.outgoing_transactions,
             }
         )
     })
