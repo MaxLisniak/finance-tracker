@@ -29,7 +29,7 @@ block content
         name="category"
       )
         each category in categories 
-          option #{category.name}
+          option(value=category._id selected=selected_category===category.name ? true : false) #{category.name}
     if wallets
       label(
         for="target_wallet"

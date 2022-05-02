@@ -11,7 +11,7 @@ router.post('/add_wallet', wallet_controller.wallet_add_POST);
 router.get('/make_transaction/add/:id', transaction_controller.transaction_add_GET);
 router.post('/make_transaction/add/:id', transaction_controller.transaction_add_POST);
 router.get('/make_transaction/spend/:id', transaction_controller.transaction_spend_GET);
-// router.post('/make_transaction/spend/:id', transaction_controller.transaction_spend_POST);
+router.post('/make_transaction/spend/:id', transaction_controller.transaction_spend_POST);
 router.get('/make_transaction/move/:id', transaction_controller.transaction_move_GET);
 // router.post('/make_transaction/move/:id', transaction_controller.transaction_move_POST);
 
