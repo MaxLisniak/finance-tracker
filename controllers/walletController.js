@@ -53,50 +53,82 @@ exports.index = function(req, res, next){
                 .exec(callback);
             }
         }, 
-        function(err, results){
+        function(err, queried_wallets){
             if (err){
                 err.status = 404;
                 return next(err);
             }
             const now = new Date();
             const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-            let balance = 0;
-            Transaction.find(
-            {
-                "$and" : [
-                    {from: results.earned._id},
-                    {datetime: {
-                        "$gt": firstDay
-                    }
-                    }
-                ]
-            }
-            ).select('amount').exec(function(err, transactions){
-                if(err){
+            let earned = 0;
+            let spent = 0;
+            async.parallel({
+                earned_transactions: function(callback){
+                    Transaction.find(
+                        {
+                            "$and" : [
+                                {from: queried_wallets.earned._id},
+                                {datetime: {
+                                    "$gt": firstDay
+                                }
+                                }
+                            ]
+                        }
+                        ).select('amount').exec(callback);
+                },
+                spent_transactions: function(callback){
+                    Transaction.find(
+                        {
+                            "$and" : [
+                                {to: queried_wallets.spent._id},
+                                {datetime: {
+                                    "$gt": firstDay
+                                }
+                                }
+                            ]
+                        }
+                        ).select('amount').exec(callback) 
+                }
+            },function(err, transactions){
+                if (err){
                     return next(err);
                 }
-                for (let transaction of transactions){
-                    balance += transaction.amount;
+
+                for (let transaction of transactions.earned_transactions){
+                    earned += transaction.amount;
                 };
-                if (results.earned.balance != balance){
-                    results.earned.balance = balance;
-                    results.earned.save(function(err){
+                if (queried_wallets.earned.balance != earned){
+                    queried_wallets.earned.balance = earned;
+                    queried_wallets.earned.save(function(err){
                         if (err){
                             return next(err);
                         }
                     })
                 }
+
+                for (let transaction of transactions.spent_transactions){
+                    spent += transaction.amount;
+                };
+                if (queried_wallets.spent.balance != spent){
+                    queried_wallets.spent.balance = spent;
+                    queried_wallets.spent.save(function(err){
+                        if (err){
+                            return next(err);
+                        }
+                    })
+                }
+
+                res.render(
+                    'index', 
+                    { 
+                        title: "All wallets", 
+                        wallets: queried_wallets.wallets,
+                        earned: queried_wallets.earned,
+                        spent: queried_wallets.spent,
+                    }
+                )
                 
             })
-            res.render(
-                'index', 
-                { 
-                    title: "All wallets", 
-                    wallets: results.wallets,
-                    earned: results.earned,
-                    spent: results.spent,
-                }
-            )
         }
 )}
 exports.wallet_view = function(req, res, next){
