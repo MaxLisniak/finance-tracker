@@ -15,7 +15,18 @@ body{
   padding: 30px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: baseline;
+  flex-wrap: wrap;
   gap: 30px;
+}
+.loading-screen{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.loading{
+  font-size: 3em;
 }
 

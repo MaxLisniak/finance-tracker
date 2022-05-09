@@ -2,6 +2,19 @@
     background-color: coral;
     padding: 20px;
     width: max-content;
+    height: 190px;
+
+  }
+  .wallet-cash{
+    border-top: 10px solid green;
+    background-color: saddlebrown;
+    color: aliceblue;
+  }
+  .wallet-btn{
+    background-color: black;
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
   }
   .wallet-name{
     font-size: 2em;
@@ -12,6 +25,7 @@
   .wallet-action-btns{
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 20px;
     padding-top: 10px;
   }
@@ -20,6 +34,6 @@
     box-shadow: none;
     border: none;
     font-size: 1em;
-    padding: 10px
+    padding: 7px
   }
   

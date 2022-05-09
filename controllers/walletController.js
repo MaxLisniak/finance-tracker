@@ -31,6 +31,17 @@ async function earned_balance_count(wallet){
 }
 
 exports.index = function(req, res, next){
+    Wallet.find()
+    .sort([['created', 'descending']])
+    .exec(function(err, wallets){
+        if (err){
+            return res.send({err: "Wallets not found"})
+        }
+        return res.send(wallets);
+    })
+}
+
+exports.indexx = function(req, res, next){
     // Find all wallet objects
     async.parallel(
         {
