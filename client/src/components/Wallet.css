@@ -1,0 +1,25 @@
+.wallet{
+    background-color: coral;
+    padding: 20px;
+    width: max-content;
+  }
+  .wallet-name{
+    font-size: 2em;
+  }
+  .wallet-balance{
+    font-size: 1.8em;
+  }
+  .wallet-action-btns{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding-top: 10px;
+  }
+  .wallet-action-btn{
+    background-color: lightgoldenrodyellow;
+    box-shadow: none;
+    border: none;
+    font-size: 1em;
+    padding: 10px
+  }
+  
