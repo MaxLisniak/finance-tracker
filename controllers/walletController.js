@@ -152,12 +152,14 @@ exports.wallet_view = function(req, res, next){
         // Find income transactions
         incoming_transactions: function(callback){
             Transaction.find({'to': req.params.id})
+            .sort([['datetime', 'descending']])
             .populate('from')
             .exec(callback);
         },
         // Find outcome transactions
         outgoing_transactions: function(callback){
             Transaction.find({'from': req.params.id})
+            .sort([['datetime', 'descending']])
             .populate('category')
             .populate('to')
             .exec(callback);

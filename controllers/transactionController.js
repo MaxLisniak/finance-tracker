@@ -7,19 +7,20 @@ const { body,validationResult } = require('express-validator');
 const transaction_types = require('../consts');
 
 
-exports.transaction_add_GET = function (req, res, next){
-    Wallet.findById(req.params.id)
-    .exec(function(err, wallet){
-        if (err){
-            err.status = 404;
-            return next(err);
-        }
-        res.render('transaction_make',{
-            title: transaction_types.add.title,
-        })
-    });
-}
+// exports.transaction_add_GET = function (req, res, next){
+//     Wallet.findById(req.params.id)
+//     .exec(function(err, wallet){
+//         if (err){
+//             err.status = 404;
+//             return next(err);
+//         }
+//         res.render('transaction_make',{
+//             title: transaction_types.add.title,
+//         })
+//     });
+// }
 
+// USED
 exports.transaction_add_POST = [
     body('description')
     .trim()
@@ -34,12 +35,8 @@ exports.transaction_add_POST = [
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            res.render('transaction_make', {
-                title: transaction_types.add.title,
-                description: req.body.description,
-                errors: errors.array()
-            })
-            return;
+            res.json(errors.array());
+            return
         }
         async.parallel({
             earned_wallet: function(callback){
@@ -49,8 +46,10 @@ exports.transaction_add_POST = [
                 Wallet.findById(req.params.id).exec(callback)
             }
         }, function (err, results){
-                if(err){
-                    return next(err);
+                if (err) {
+                    console.log(err);
+                    res.sendStatus(500);
+                    return;
                 }
                 req.body.amount = Number(req.body.amount);
                 let transaction = new Transaction(
@@ -65,38 +64,45 @@ exports.transaction_add_POST = [
                 // console.log(transaction);
                 results.target_wallet.balance += req.body.amount;
                 results.target_wallet.save(function(err){
-                    if (err){
-                        return next(err);
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
+                    }
+                })
+                results.earned_wallet.balance += req.body.amount;
+                results.earned_wallet.save(function(err){
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
                     }
                 })
                 transaction.save(function(err){
-                    if (err){
-                        return next(err);
-                    } 
-                    res.redirect('/wallets');
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
+                    }
+                    res.status(200).json({success: true});
+                    return;
                 })
+                
             }
         )
 }]  
 
-exports.transaction_spend_GET = function (req, res, next){
-    Wallet.findById(req.params.id)
-    .exec(function(err, wallet){
-        if (err){
-            err.status = 404;
-            return next(err);
-        }
+exports.transaction_categories_GET = function (req, res, next){
+    
         Category.find()
         .exec(function(err, categories){
-            if (err){
-                return next(err);
+            if (err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
             }
-            res.render('transaction_make',{
-                title: transaction_types.spend.title,
-                categories: categories,
-            })
+            res.status(200).json(categories);
         })
-    });
 }
 
 exports.transaction_spend_POST = [
@@ -111,22 +117,14 @@ exports.transaction_spend_POST = [
     .withMessage("The number must be greater than 0"),
 
     body('category')
+    .trim()
     .escape(),
 
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            Category.find()
-            .exec(function(err, categories){
-                res.render('transaction_make', {
-                    title: transaction_types.add.title,
-                    description: req.body.description,
-                    errors: errors.array(),
-                    selected_category: req.body.category,
-                    categories: categories,
-                })
-            })
-            return;
+            res.json(errors.array());
+            return
         }
         async.parallel({
             spent_wallet: function(callback){
@@ -153,15 +151,28 @@ exports.transaction_spend_POST = [
                 // console.log(transaction);
                 results.target_wallet.balance -= req.body.amount;
                 results.target_wallet.save(function(err){
-                    if (err){
-                        return next(err);
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
+                    }
+                });
+                results.spent_wallet.balance += req.body.amount;
+                results.spent_wallet.save(function(err){
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
                     }
                 })
                 transaction.save(function(err){
-                    if (err){
-                        return next(err);
-                    } 
-                    res.redirect('/wallets');
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
+                    }
+                    res.status(200).json({success: true});
+                    return;
                 })
             }
         )

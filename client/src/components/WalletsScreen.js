@@ -14,7 +14,7 @@ export default function WalletsScreen(props){
                 console.log(data);
                 setWallets(data);
                 setLoading(false);
-                props.setHeading("Wallets");
+                props.setHeading("My Wallet");
             }
         )
     }, []);
@@ -27,6 +27,7 @@ export default function WalletsScreen(props){
             balance={wallet.balance} 
             type={wallet.type}
             viewWallet={props.viewWallet}
+            performTransaction={props.performTransaction}
           />
         )
       });

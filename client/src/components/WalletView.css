@@ -1,0 +1,9 @@
+.button-home{
+    padding: 5px;
+    background-color: green;
+    font-size: 1em;
+    width: 390px;
+    border: none;
+    color: lightgoldenrodyellow;
+    border-radius: 10px;
+}

@@ -39,8 +39,7 @@ let TransactionSchema = new Schema(
         category: {
             type: Schema.Types.ObjectId,
             ref: 'Category',
-            required: true,
-            default: undefined,
+            required: false,
         },
         description: {
             type: String,

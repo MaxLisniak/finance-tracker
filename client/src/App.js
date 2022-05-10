@@ -9,8 +9,8 @@ function App() {
   // const [wallets, setWallets] = useState([]);
   // const [isLoading, setLoading] = useState(true);
   const [isViewing, setViewing] = useState({status:false, id: undefined});
-  const [heading, setHeading] = useState("Wallets");
-
+  const [heading, setHeading] = useState("My Wallet");
+  const [transactionPerforming, performTransaction] = useState(null);
   // useEffect( () => {
   //     fetch('http://localhost:3000/wallets')
   //     .then(response => response.json())
@@ -40,6 +40,9 @@ function App() {
   function viewWallet(id){
     setViewing({status: true, id: id});
   }
+  function stopViewingWallet(){
+    setViewing({status: false, id: undefined});
+  }
 
   return (
     <div className="body">
@@ -49,8 +52,20 @@ function App() {
       
         {
           isViewing.status==true ? 
-          <WalletView id={isViewing.id} setHeading={setHeading} viewWallet={viewWallet} /> :
-          <WalletsScreen viewWallet={viewWallet} setHeading={setHeading} />
+          <WalletView 
+            id={isViewing.id} 
+            setHeading={setHeading} 
+            viewWallet={viewWallet} 
+            stopViewingWallet={stopViewingWallet} 
+            performTransaction={performTransaction}
+            transactionPerforming={transactionPerforming}
+          /> :
+          <WalletsScreen 
+            viewWallet={viewWallet} 
+            setHeading={setHeading}
+            performTransaction={performTransaction}  
+              
+          />
         }
 
     </div>
