@@ -3,7 +3,6 @@ import './WalletView.css'
 import LoadingScreen from "./LoadingScreen";
 import Wallet from "./Wallet";
 import TransactionList from "./TransactionList";
-import { mapValues } from "async";
 
 export default function WalletView(props){
     const [transactions, setTransactions] = useState({
@@ -16,11 +15,13 @@ export default function WalletView(props){
         amount: 0,
         description: "",
         category: undefined,
+        target_wallet: undefined,
     });
     const [categories, setCategories] = useState([]);
     function handleClick(){
         props.stopViewingWallet();
     }
+    const [wallets, setWallets] = useState([]);
 
     useEffect( () => {
         fetch('http://localhost:3000/wallets/wallet/' + props.id)
@@ -35,23 +36,33 @@ export default function WalletView(props){
                 })
                 setLoading(false);
                 props.setHeading(data.wallet.name)
-            }
-        )
-        fetch('http://localhost:3000/wallets/transaction_categories/')
-        .then(response => response.json())
-        .then(data => 
-            {
-                setCategories(data);
-                updateForm({category: data[0]._id});
-            }
-        )
-    }, []);
 
-    let categoryList = categories.map(category => {
-        return (
-            <option value={category._id} key={category._id}>{category.name}</option>
-        )
-    })
+                if (props.transactionPerforming === "Move"){
+                    console.log(wallet);
+                    const url = 'http://localhost:3000/wallets/accessible/' + data.wallet._id;
+                    fetch(url)
+                    .then(response => response.json())
+                    .then(data => 
+                        {
+                            setWallets(data);
+                            updateForm({target_wallet: data[0]._id})
+                        }
+                    )
+                }
+            }
+        );
+        if (props.transactionPerforming === "Spend"){
+            fetch('http://localhost:3000/wallets/transaction_categories/')
+            .then(response => response.json())
+            .then(data => 
+                {
+                    setCategories(data); 
+                    updateForm({category: data[0]._id})
+                }
+            );
+        }
+        
+    }, []);
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -60,7 +71,9 @@ export default function WalletView(props){
         let newTransaction = {  };
         newTransaction.amount = form.amount;
         newTransaction.description = form.description;
-        if (form.category !== undefined) {newTransaction.category = form.category}
+        if (form.category !== undefined) {newTransaction.category = form.category};
+        if (form.target_wallet !== undefined) {newTransaction.target_wallet = form.target_wallet};
+
 
         console.log(newTransaction)
         let url = 'http://localhost:3000/wallets/';
@@ -81,17 +94,33 @@ export default function WalletView(props){
           return;
         });
       
-        setForm({ description: "", amount: 0, category: undefined});
+        setForm({ 
+            description: "", 
+            amount: 0, 
+            category: undefined, 
+            target_wallet: undefined
+        });
         props.performTransaction(null);
         props.stopViewingWallet();
     }
+
     function updateForm(value) {
     return setForm((prev) => {
         return { ...prev, ...value };
     });
     }
 
-    
+    const categoryList = categories.map(category => {
+        return (
+            <option value={category._id} key={category._id}>{category.name}</option>
+        )
+    })
+
+    const walletList = wallets.map(item => {
+        return (
+            <option value={item._id} key={item._id}>{item.name} ({item.balance})</option>
+        )
+    })
 
     const viewingTemplate = (
         <div className='container flex-column'>
@@ -114,6 +143,7 @@ export default function WalletView(props){
 
     const makeTransactionTemplate = (
         <div className='container flex-column'>
+            <button className="button-home" onClick={handleClick}>back</button>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="transaction-amount">Amount</label>
                 <input 
@@ -141,6 +171,15 @@ export default function WalletView(props){
                     
                 ) : ""
                 }
+                {props.transactionPerforming === "Move" ?
+                (
+                    <select name="target_wallet" onChange={(e) => updateForm({ target_wallet: e.target.value })}>
+                    {walletList }
+                    </select>
+                    
+                ) : ""
+                }
+
                 <input
                     type="submit"
                     value={props.transactionPerforming}
@@ -150,11 +189,10 @@ export default function WalletView(props){
     )
 
     return (
-        isLoading==true ? <LoadingScreen /> :
-        props.transactionPerforming === null ?
-        viewingTemplate :
-        makeTransactionTemplate 
-        
+            isLoading==true ? <LoadingScreen /> :
+            props.transactionPerforming === null ?
+            viewingTemplate :
+            makeTransactionTemplate 
     )
     
 }

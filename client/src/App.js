@@ -42,6 +42,7 @@ function App() {
   }
   function stopViewingWallet(){
     setViewing({status: false, id: undefined});
+    performTransaction(null);
   }
 
   return (

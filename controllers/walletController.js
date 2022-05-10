@@ -5,37 +5,54 @@ const Category = require("../models/category");
 const { body,validationResult } = require('express-validator');
 var async = require('async');
 
-async function earned_balance_count(wallet){
-    const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    let balance = 0;
-    if (wallet.name === "EARNED") {
-        const transactions = await Transaction.find(
-            {
-                "$and" : [
-                    {from: wallet._id},
-                    {datetime: {
-                        "$gt": firstDay
-                    }
-                    }
-                ]
-            }
-        ).select('amount').exec();
-        // console.log(transactions);
-        for (let transaction of transactions){
-            balance += transaction.amount;
-        };
-        return balance;
-    }
+// async function earned_balance_count(wallet){
+//     const now = new Date();
+//     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+//     let balance = 0;
+//     if (wallet.name === "EARNED") {
+//         const transactions = await Transaction.find(
+//             {
+//                 "$and" : [
+//                     {from: wallet._id},
+//                     {datetime: {
+//                         "$gt": firstDay
+//                     }
+//                     }
+//                 ]
+//             }
+//         ).select('amount').exec();
+//         // console.log(transactions);
+//         for (let transaction of transactions){
+//             balance += transaction.amount;
+//         };
+//         return balance;
+//     }
     
-}
+// }
 
-exports.index = function(req, res, next){
+exports.wallets_GET = function(req, res, next){
     Wallet.find()
     .sort([['created', 'descending']])
     .exec(function(err, wallets){
-        if (err){
-            return res.send({err: "Wallets not found"})
+        if (err) {
+            console.log(err);
+            res.sendStatus(404);
+            return;
+        }
+        return res.send(wallets);
+    })
+}
+exports.accessible_wallets_GET =function(req, res, next){
+    Wallet.find()
+    .where("type").ne("Service")
+    .where("_id").ne(req.params.id)
+    // .where("id").ne(req.params.id)
+    .sort([['created', 'descending']])
+    .exec(function(err, wallets){
+        if (err) {
+            console.log(err);
+            res.sendStatus(404);
+            return;
         }
         return res.send(wallets);
     })

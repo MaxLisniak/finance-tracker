@@ -7,8 +7,9 @@
   .wallet-cash{
     border-left: 35px solid green;
     border-right: 35px solid green;
-    background-color: saddlebrown;
-    color: aliceblue;
+    background-color: rgb(198, 144, 105);
+    color: black;
+    
     width: 280px;
     /* border-radius: 0 0 10px 10px; */
   }

@@ -4,8 +4,8 @@ import Wallet from "./Wallet";
 import LoadingScreen from "./LoadingScreen";
 
 export default function WalletsScreen(props){
-    const [wallets, setWallets] = useState([]);
     const [isLoading, setLoading] = useState(true);
+    const [wallets, setWallets] = useState([]);
     useEffect( () => {
         fetch('http://localhost:3000/wallets')
         .then(response => response.json())

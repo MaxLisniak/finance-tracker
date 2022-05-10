@@ -105,6 +105,7 @@ exports.transaction_categories_GET = function (req, res, next){
         })
 }
 
+// USED
 exports.transaction_spend_POST = [
     body('description')
     .trim()
@@ -134,9 +135,11 @@ exports.transaction_spend_POST = [
                 Wallet.findById(req.params.id).exec(callback)
             }
         }, function (err, results){
-                if(err){
-                    return next(err);
-                }
+            if (err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
                 req.body.amount = Number(req.body.amount);
                 let transaction = new Transaction(
                     {
@@ -215,28 +218,15 @@ exports.transaction_move_POST = [
     .withMessage("The number must be greater than 0"),
 
     body('target_wallet')
+    .trim()
     .escape(),
 
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            Wallet.find({
-                "type": {
-                    "$ne": "Service"
-                }
-            }).exec(function(err, wallets){
-                if (err){
-                    return next(err);
-                }
-                res.render('transaction_make', {
-                    title: transaction_types.move.title,
-                    description: req.body.description,
-                    errors: errors.array(),
-                    wallets: wallets,
-                })
-            })
-            
+            res.json(errors.array());
             return;
+            
         }
         async.parallel({
             this_wallet: function(callback){
@@ -246,8 +236,10 @@ exports.transaction_move_POST = [
                 Wallet.findById(req.body.target_wallet).exec(callback)
             }
         }, function (err, queried_wallets){
-                if(err){
-                    return next(err);
+                if (err) {
+                    console.log(err);
+                    res.sendStatus(500);
+                    return;
                 }
                 req.body.amount = Number(req.body.amount);
                 let transaction = new Transaction(
@@ -262,23 +254,30 @@ exports.transaction_move_POST = [
                 // console.log(transaction);
                 queried_wallets.target_wallet.balance += req.body.amount;
                 queried_wallets.target_wallet.save(function(err){
-                    if (err){
-                        return next(err);
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
                     }
                 })
 
                 queried_wallets.this_wallet.balance -= req.body.amount;
                 queried_wallets.this_wallet.save(function(err){
-                    if (err){
-                        return next(err);
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
                     }
                 })
 
                 transaction.save(function(err){
-                    if (err){
-                        return next(err);
-                    } 
-                    res.redirect('/wallets');
+                    if (err) {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
+                    }
+                    res.status(200).json({success: true});
+                    return;
                 })
             }
         )
