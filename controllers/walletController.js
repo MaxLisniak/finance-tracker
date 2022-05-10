@@ -165,22 +165,23 @@ exports.wallet_view = function(req, res, next){
     }, function(err, results){
         // If error
         if (err) {
-            return next(err);
+            return res.send({err: err});
         }
         // Wallet not found
         if (results.wallet===undefined) {
             var err = new Error('Wallet not found');
             err.status = 404;
-            return next(err);
+            return res.send(err);
         }
-        res.render(
-            'wallet_view', 
-            {
-                title: results.wallet.name, 
-                income: results.incoming_transactions, 
-                outcome: results.outgoing_transactions,
-            }
-        )
+        // res.render(
+        //     'wallet_view', 
+        //     {
+        //         title: results.wallet.name, 
+        //         income: results.incoming_transactions, 
+        //         outcome: results.outgoing_transactions,
+        //     }
+        // )
+        res.send(results);
     })
 }
 

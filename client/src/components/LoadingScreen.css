@@ -1,0 +1,10 @@
+.loading-screen{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  .loading{
+    font-size: 3em;
+  }
+  
