@@ -1,5 +1,5 @@
 import "./TransactionList.css";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { DateTime } from "luxon";
 
 export default function TransactionList(props){

@@ -1,4 +1,4 @@
-.add-wallet-button{
+.add-wallet-button {
     width: 350px;
     height: 170px;
     padding: 20px;
@@ -8,24 +8,28 @@
     align-items: center;
     justify-content: center;
 }
-.plus{
+
+.plus {
     font-size: 4em;
     padding: 0;
 }
-.input-block{
+
+.input-block {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 }
-#add-wallet-form{
+
+#add-wallet-form {
     display: flex;
     flex-direction: column;
     justify-content: stretch;
     gap: 10px;
     width: 390px;
 }
-#add-wallet-form input[type="text"], 
-#add-wallet-form input[type="submit"]{
+
+#add-wallet-form input[type="text"],
+#add-wallet-form input[type="submit"] {
     padding: 10px;
     font-size: 1em;
     background-color: aliceblue;
@@ -34,9 +38,11 @@
     width: 100%;
     -webkit-appearance: none;
 }
-#add-wallet-form input[type="text"]:focus{
+
+#add-wallet-form input[type="text"]:focus {
     outline: none;
 }
-#add-wallet-form label{
+
+#add-wallet-form label {
     font-size: 1.3em;
 }

@@ -30,6 +30,7 @@ var async = require('async');
     
 // }
 
+// USED
 exports.wallets_GET = function(req, res, next){
     Wallet.find()
     .sort([['created', 'ascending']])
@@ -42,6 +43,8 @@ exports.wallets_GET = function(req, res, next){
         return res.send(wallets);
     })
 }
+
+//USED
 exports.accessible_wallets_GET =function(req, res, next){
     Wallet.find()
     .where("type").ne("Service")
@@ -58,107 +61,109 @@ exports.accessible_wallets_GET =function(req, res, next){
     })
 }
 
-exports.indexx = function(req, res, next){
-    // Find all wallet objects
-    async.parallel(
-        {
-            wallets: function(callback){
-                Wallet.find({
-                    name: {
-                        "$nin": ["EARNED", "SPENT"]
-                    }
-                })
-                // Sort by 'created' field in ascending order
-                .sort([['created', 'ascending']])
-                .exec(callback);
-            },
-            earned: function(callback){
-                Wallet.findOne({name: "EARNED"})
-                .exec(callback);
-            },
-            spent: function(callback){
-                Wallet.findOne({name: "SPENT"})
-                .exec(callback);
-            }
-        }, 
-        function(err, queried_wallets){
-            if (err){
-                err.status = 404;
-                return next(err);
-            }
-            const now = new Date();
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-            let earned = 0;
-            let spent = 0;
-            async.parallel({
-                earned_transactions: function(callback){
-                    Transaction.find(
-                        {
-                            "$and" : [
-                                {from: queried_wallets.earned._id},
-                                {datetime: {
-                                    "$gt": firstDay
-                                }
-                                }
-                            ]
-                        }
-                        ).select('amount').exec(callback);
-                },
-                spent_transactions: function(callback){
-                    Transaction.find(
-                        {
-                            "$and" : [
-                                {to: queried_wallets.spent._id},
-                                {datetime: {
-                                    "$gt": firstDay
-                                }
-                                }
-                            ]
-                        }
-                        ).select('amount').exec(callback) 
-                }
-            },function(err, transactions){
-                if (err){
-                    return next(err);
-                }
+// exports.indexx = function(req, res, next){
+//     // Find all wallet objects
+//     async.parallel(
+//         {
+//             wallets: function(callback){
+//                 Wallet.find({
+//                     name: {
+//                         "$nin": ["EARNED", "SPENT"]
+//                     }
+//                 })
+//                 // Sort by 'created' field in ascending order
+//                 .sort([['created', 'ascending']])
+//                 .exec(callback);
+//             },
+//             earned: function(callback){
+//                 Wallet.findOne({name: "EARNED"})
+//                 .exec(callback);
+//             },
+//             spent: function(callback){
+//                 Wallet.findOne({name: "SPENT"})
+//                 .exec(callback);
+//             }
+//         }, 
+//         function(err, queried_wallets){
+//             if (err){
+//                 err.status = 404;
+//                 return next(err);
+//             }
+//             const now = new Date();
+//             const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+//             let earned = 0;
+//             let spent = 0;
+//             async.parallel({
+//                 earned_transactions: function(callback){
+//                     Transaction.find(
+//                         {
+//                             "$and" : [
+//                                 {from: queried_wallets.earned._id},
+//                                 {datetime: {
+//                                     "$gt": firstDay
+//                                 }
+//                                 }
+//                             ]
+//                         }
+//                         ).select('amount').exec(callback);
+//                 },
+//                 spent_transactions: function(callback){
+//                     Transaction.find(
+//                         {
+//                             "$and" : [
+//                                 {to: queried_wallets.spent._id},
+//                                 {datetime: {
+//                                     "$gt": firstDay
+//                                 }
+//                                 }
+//                             ]
+//                         }
+//                         ).select('amount').exec(callback) 
+//                 }
+//             },function(err, transactions){
+//                 if (err){
+//                     return next(err);
+//                 }
 
-                for (let transaction of transactions.earned_transactions){
-                    earned += transaction.amount;
-                };
-                if (queried_wallets.earned.balance != earned){
-                    queried_wallets.earned.balance = earned;
-                    queried_wallets.earned.save(function(err){
-                        if (err){
-                            return next(err);
-                        }
-                    })
-                }
+//                 for (let transaction of transactions.earned_transactions){
+//                     earned += transaction.amount;
+//                 };
+//                 if (queried_wallets.earned.balance != earned){
+//                     queried_wallets.earned.balance = earned;
+//                     queried_wallets.earned.save(function(err){
+//                         if (err){
+//                             return next(err);
+//                         }
+//                     })
+//                 }
 
-                for (let transaction of transactions.spent_transactions){
-                    spent += transaction.amount;
-                };
-                if (queried_wallets.spent.balance != spent){
-                    queried_wallets.spent.balance = spent;
-                    queried_wallets.spent.save(function(err){
-                        if (err){
-                            return next(err);
-                        }
-                    })
-                }
+//                 for (let transaction of transactions.spent_transactions){
+//                     spent += transaction.amount;
+//                 };
+//                 if (queried_wallets.spent.balance != spent){
+//                     queried_wallets.spent.balance = spent;
+//                     queried_wallets.spent.save(function(err){
+//                         if (err){
+//                             return next(err);
+//                         }
+//                     })
+//                 }
 
-                res.render(
-                    'index', 
-                    { 
-                        title: "All wallets", 
-                        wallets: queried_wallets.wallets,
-                        earned: queried_wallets.earned,
-                        spent: queried_wallets.spent,
-                    }
-                )
+//                 res.render(
+//                     'index', 
+//                     { 
+//                         title: "All wallets", 
+//                         wallets: queried_wallets.wallets,
+//                         earned: queried_wallets.earned,
+//                         spent: queried_wallets.spent,
+//                     }
+//                 )
                 
-            })
-        }
-)}
+//             })
+//         }
+// )}
+
+//USED
 exports.wallet_view = function(req, res, next){
     async.parallel({
         // Find wallet
@@ -192,14 +197,6 @@ exports.wallet_view = function(req, res, next){
             err.status = 404;
             return res.send(err);
         }
-        // res.render(
-        //     'wallet_view', 
-        //     {
-        //         title: results.wallet.name, 
-        //         income: results.incoming_transactions, 
-        //         outcome: results.outgoing_transactions,
-        //     }
-        // )
         res.send(results);
     })
 }

@@ -20,6 +20,20 @@ const transaction_types = require('../consts');
 //     });
 // }
 
+//USED
+exports.transaction_categories_GET = function (req, res, next){
+    
+    Category.find()
+    .exec(function(err, categories){
+        if (err) {
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        }
+        res.status(200).json(categories);
+    })
+}
+
 // USED
 exports.transaction_add_POST = [
     body('description')
@@ -92,18 +106,6 @@ exports.transaction_add_POST = [
         )
 }]  
 
-exports.transaction_categories_GET = function (req, res, next){
-    
-        Category.find()
-        .exec(function(err, categories){
-            if (err) {
-                console.log(err);
-                res.sendStatus(500);
-                return;
-            }
-            res.status(200).json(categories);
-        })
-}
 
 // USED
 exports.transaction_spend_POST = [
@@ -181,31 +183,31 @@ exports.transaction_spend_POST = [
         )
 }]  
 
-exports.transaction_move_GET = function (req, res, next){
-    Wallet.findById(req.params.id)
-    .exec(function(err, wallet){
-        if (err){
-            err.status = 404;
-            return next(err);
-        }
-        Wallet.find({
-            "type": {
-                "$ne": "Service"
-            }
-        })
-        // .where('name').ne('EARNED')
-        .exec(function(err, wallets){
-            if (err){
-                return next(err);
-            }
-            res.render('transaction_make',{
-                title: transaction_types.move.title,
-                wallets: wallets,
-            })
-        })
-    });
-}
+// exports.transaction_move_GET = function (req, res, next){
+//     Wallet.findById(req.params.id)
+//     .exec(function(err, wallet){
+//         if (err){
+//             err.status = 404;
+//             return next(err);
+//         }
+//         Wallet.find({
+//             "type": {
+//                 "$ne": "Service"
+//             }
+//         })
+//         .exec(function(err, wallets){
+//             if (err){
+//                 return next(err);
+//             }
+//             res.render('transaction_make',{
+//                 title: transaction_types.move.title,
+//                 wallets: wallets,
+//             })
+//         })
+//     });
+// }
 
+// USED
 exports.transaction_move_POST = [
     body('description')
     .trim()
