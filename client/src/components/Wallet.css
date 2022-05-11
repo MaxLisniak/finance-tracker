@@ -1,20 +1,20 @@
 .wallet{
     padding: 20px;
     width: 350px;
-    height: 190px;
+    height: 170px;
 
   }
   .wallet-cash{
     border-left: 35px solid green;
     border-right: 35px solid green;
-    background-color: rgb(198, 144, 105);
+    background-color: rgb(210, 173, 146);
     color: black;
     
     width: 280px;
     /* border-radius: 0 0 10px 10px; */
   }
   .wallet-cash button{
-    background-color: rgb(164, 123, 93);
+    background-color: rgb(182, 149, 125);
   }
   .wallet-service{
     background-color: thistle;
@@ -34,7 +34,7 @@
     border-radius: 50%;
   }
   .wallet-name{
-    font-size: 2em;
+    font-size: 2.2em;
   }
   .wallet-balance{
     font-size: 1.8em;

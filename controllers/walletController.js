@@ -32,7 +32,7 @@ var async = require('async');
 
 exports.wallets_GET = function(req, res, next){
     Wallet.find()
-    .sort([['created', 'descending']])
+    .sort([['created', 'ascending']])
     .exec(function(err, wallets){
         if (err) {
             console.log(err);
@@ -204,15 +204,16 @@ exports.wallet_view = function(req, res, next){
     })
 }
 
-exports.wallet_add_GET = function(req, res, next){
-    res.render(
-        'wallet_add', 
-        { 
-            title: "Add a digital wallet",
-        }
-    );
-};
+// exports.wallet_add_GET = function(req, res, next){
+//     res.render(
+//         'wallet_add', 
+//         { 
+//             title: "Add a digital wallet",
+//         }
+//     );
+// };
 
+//USED
 exports.wallet_add_POST = [
     // Validate and sanitize fields
     body('name', 'Name must be specified')
@@ -237,33 +238,35 @@ exports.wallet_add_POST = [
 
         // If there are validation errors
         if (!errors.isEmpty()){
-            res.render(
-                'wallet_add', 
-                { 
-                    title: "Add a digital wallet",
-                    wallet: new_wallet,
-                    errors: errors.array(),
-                }
-            );
+            if (err) {
+                console.log(err.array());
+                res.sendStatus(500);
+                return;
+            }
         }
         // Data is valid
         else {
             Wallet.findOne({'name': req.body.name})
             .exec(function (err, found_wallet) {
-                if(err) {
-                    return next(err);
+                if (err) {
+                    console.log(err);
+                    res.sendStatus(500);
+                    return;
                 }
 
                 // Such a wallet already exists
                 if (found_wallet){
-                    res.redirect('/');
+                    res.sendStatus(500);
+                    return;
                 }
                 else {
                     new_wallet.save(function (err){
                         if (err) {
-                            return next(err);
+                            console.log(err);
+                            res.sendStatus(500);
+                            return;
                         }
-                        res.redirect('/');
+                        res.sendStatus(200);
                     })
                 }
 

@@ -7,3 +7,30 @@
     color: lightgoldenrodyellow;
     border-radius: 10px;
 }
+#transaction-form, .input-block{
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    gap: 10px;
+}
+#transaction-form {
+    width: 390px;
+    
+}
+#transaction-form input, #transaction-form select{
+    padding: 10px;
+    font-size: 1em;
+    background-color: aliceblue;
+    border: 1px solid green;
+    border-radius: 5px;
+    -webkit-appearance: none;
+}
+#transaction-form input:focus, #transaction-form select:focus{
+    outline: none;
+}
+#transaction-form label{
+    font-size: 1.3em;
+}
+/* select{
+    padding: 10px;
+} */

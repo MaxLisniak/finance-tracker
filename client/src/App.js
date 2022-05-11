@@ -65,7 +65,6 @@ function App() {
             viewWallet={viewWallet} 
             setHeading={setHeading}
             performTransaction={performTransaction}  
-              
           />
         }
 

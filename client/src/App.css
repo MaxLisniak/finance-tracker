@@ -17,7 +17,7 @@ body{
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: baseline;
+  align-items: flex-end;
   flex-wrap: wrap;
   gap: 30px;
 }

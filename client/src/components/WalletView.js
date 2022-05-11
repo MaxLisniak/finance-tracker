@@ -37,30 +37,33 @@ export default function WalletView(props){
                 setLoading(false);
                 props.setHeading(data.wallet.name)
 
-                if (props.transactionPerforming === "Move"){
-                    console.log(wallet);
-                    const url = 'http://localhost:3000/wallets/accessible/' + data.wallet._id;
-                    fetch(url)
-                    .then(response => response.json())
-                    .then(data => 
-                        {
-                            setWallets(data);
+                
+                console.log(wallet);
+                const url = 'http://localhost:3000/wallets/accessible/' + data.wallet._id;
+                fetch(url)
+                .then(response => response.json())
+                .then(data => 
+                    {
+                        setWallets(data);
+                        if (props.transactionPerforming === "Move"){
                             updateForm({target_wallet: data[0]._id})
                         }
-                    )
+                    }
+                )
+            }
+        );
+        
+        fetch('http://localhost:3000/wallets/transaction_categories/')
+        .then(response => response.json())
+        .then(data => 
+            {
+                setCategories(data); 
+                if (props.transactionPerforming === "Spend"){
+                    updateForm({category: data[0]._id})
                 }
             }
         );
-        if (props.transactionPerforming === "Spend"){
-            fetch('http://localhost:3000/wallets/transaction_categories/')
-            .then(response => response.json())
-            .then(data => 
-                {
-                    setCategories(data); 
-                    updateForm({category: data[0]._id})
-                }
-            );
-        }
+        
         
     }, []);
 
@@ -144,38 +147,48 @@ export default function WalletView(props){
     const makeTransactionTemplate = (
         <div className='container flex-column'>
             <button className="button-home" onClick={handleClick}>back</button>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="transaction-amount">Amount</label>
-                <input 
-                    id="transaction-amount"
-                    type="number"
-                    placeholder="Enter amount"
-                    name="amount"
-                    required="required" 
-                    onChange={(e) => updateForm({ amount: e.target.value })}
-                />
-                <label htmlFor="transaction-description">Description</label>
-                <input 
-                    id="transaction-description"
-                    type="text"
-                    placeholder="Enter description"
-                    name="description"
-                    onChange={(e) => updateForm({ description: e.target.value })}
+            <form id="transaction-form" onSubmit={handleSubmit}>
+                <div className="input-block">
+                    <label htmlFor="transaction-amount">Amount</label>
+                    <input 
+                        id="transaction-amount"
+                        type="number"
+                        placeholder="Enter amount"
+                        name="amount"
+                        required="required" 
+                        min={1}
+                        onChange={(e) => updateForm({ amount: e.target.value })}
+                    />
+                </div>
+                <div className="input-block">
+                    <label htmlFor="transaction-description">Description</label>
+                    <input 
+                        id="transaction-description"
+                        type="text"
+                        placeholder="Enter description"
+                        name="description"
+                        onChange={(e) => updateForm({ description: e.target.value })}
 
-                />
+                    />
+                </div>
                 {props.transactionPerforming === "Spend" ?
                 (
-                    <select name="category" onChange={(e) => updateForm({ category: e.target.value })}>
-                    {categoryList }
-                    </select>
-                    
+                    <div className="input-block">
+                        <label id="category-select-label" htmlFor="category-select">Select category</label>
+                        <select id="category-select" name="category" onChange={(e) => updateForm({ category: e.target.value })}>
+                            {categoryList }
+                        </select>
+                    </div>
                 ) : ""
                 }
                 {props.transactionPerforming === "Move" ?
                 (
-                    <select name="target_wallet" onChange={(e) => updateForm({ target_wallet: e.target.value })}>
-                    {walletList }
-                    </select>
+                    <div className="input-block">
+                        <label id="target-wallet-select-label" htmlFor="target-wallet-select">Select target wallet</label>
+                        <select id="target-wallet-select" name="target_wallet" onChange={(e) => updateForm({ target_wallet: e.target.value })}>
+                            {walletList }
+                        </select>
+                    </div>
                     
                 ) : ""
                 }
@@ -186,7 +199,7 @@ export default function WalletView(props){
                 />
             </form>
         </div>
-    )
+    );
 
     return (
             isLoading==true ? <LoadingScreen /> :

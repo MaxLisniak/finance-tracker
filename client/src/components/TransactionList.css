@@ -14,8 +14,7 @@ li{
 }
 .transaction{
     /* background-color: rgb(183, 222, 183); */
-    width: 70vw;
-    max-width: 500px;
+    width: 360px;
     padding: 5px 15px;
 }
 .transaction-description{

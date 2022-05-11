@@ -16,7 +16,7 @@ export default function TransactionList(props){
         return (
         <li key={transaction._id} className={transactionClassName}>
             <p className="transaction-amount">{sign} {transaction.amount}</p>
-            <p className="transaction-description">"{transaction.description}"</p>
+            <p className="transaction-description">{transaction.description}</p>
             <p className="transaction-from">{
                 transaction.from.name !== undefined ? 
                 "from " + transaction.from.name : ""
